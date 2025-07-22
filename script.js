@@ -18,11 +18,7 @@ class ChromeDesktop {
     }
 
     // 綁定所有事件
-    bindEvents() {
-        // 側邊欄功能
-        document.getElementById('hide-sidebar-btn').addEventListener('click', () => this.toggleSidebar());
-        document.getElementById('show-sidebar-btn').addEventListener('click', () => this.toggleSidebar());
-        
+    bindEvents() {    
         // 桌面分類切換
         document.querySelectorAll('.desktop-category').forEach(category => {
             category.addEventListener('click', (e) => this.switchCategory(e.target.closest('.desktop-category').dataset.category));
