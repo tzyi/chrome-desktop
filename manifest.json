@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Chrome Desktop",
+  "version": "1.0.0",
+  "description": "將您喜愛的網站組織成桌面式界面，像Windows桌面一樣管理您的書籤",
+  "permissions": [
+    "storage",
+    "tabs",
+    "bookmarks"
+  ],
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Chrome Desktop",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
