@@ -195,7 +195,7 @@ class ChromeDesktop {
 
         if (website.type === 'folder') {
             iconDiv.innerHTML = `
-                <div class="w-16 h-16 mb-2 flex items-center justify-center">
+                <div class="w-8 h-8 mb-2 flex items-center justify-center">
                     <i class="fas fa-folder text-4xl text-yellow-500"></i>
                 </div>
                 <span class="text-sm text-center max-w-20 truncate">${website.name}</span>
@@ -204,7 +204,7 @@ class ChromeDesktop {
         } else {
             const iconUrl = website.icon || this.getDefaultIcon(website.url);
             iconDiv.innerHTML = `
-                <div class="w-16 h-16 mb-2 flex items-center justify-center">
+                <div class="w-8 h-8 mb-2 flex items-center justify-center">
                     <img src="${iconUrl}" alt="${website.name}" class="w-12 h-12 rounded-lg" 
                          onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iOCIgZmlsbD0iIzM3NDE1MSIvPgo8cGF0aCBkPSJNMTYgMTZIMzJWMzJIMTZWMTZaIiBmaWxsPSIjNkI3Mjg0Ii8+Cjwvc3ZnPgo='">
                 </div>
