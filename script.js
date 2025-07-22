@@ -45,7 +45,12 @@ class ChromeDesktop {
 
         // 新增桌面分類
         document.getElementById('add-category-btn').addEventListener('click', () => this.addCategory());
-    }
+
+        // 重新綁定拖拽事件
+        this.bindDragEvents();
+    };
+
+    
 
     // 綁定模態框事件
     bindModalEvents() {
@@ -161,6 +166,7 @@ class ChromeDesktop {
     loadDesktop() {
         const grid = document.getElementById('desktop-grid');
         grid.innerHTML = '';
+        grid.style.position = 'relative';
         
         const currentWebsites = this.getCurrentWebsites();
         
@@ -168,6 +174,9 @@ class ChromeDesktop {
             const icon = this.createIcon(website, index);
             grid.appendChild(icon);
         });
+        
+        // 重新綁定拖拽事件
+        this.bindDragEvents();
     }
 
     // 獲取當前路徑下的網站
@@ -188,6 +197,21 @@ class ChromeDesktop {
         iconDiv.draggable = true;
         iconDiv.dataset.index = index;
         iconDiv.dataset.type = website.type;
+        iconDiv.style.position = 'absolute';
+        iconDiv.style.cursor = 'grab';
+        
+        // 設置初始位置
+        if (website.position) {
+            iconDiv.style.left = website.position.x + 'px';
+            iconDiv.style.top = website.position.y + 'px';
+        } else {
+            // 計算網格位置
+            const gridSize = 80;
+            const col = index % 8;
+            const row = Math.floor(index / 8);
+            iconDiv.style.left = (col * gridSize + 20) + 'px';
+            iconDiv.style.top = (row * gridSize + 20) + 'px';
+        }
 
         if (website.type === 'folder') {
             iconDiv.innerHTML = `
@@ -528,6 +552,84 @@ class ChromeDesktop {
         input.click();
     }
 
+    // 綁定拖拽事件
+    bindDragEvents() {
+        const icons = document.querySelectorAll('.desktop-icon');
+        
+        icons.forEach(icon => {
+            let offsetX, offsetY, isDragging = false;
+            let initialMouseX, initialMouseY;
+            
+            const mouseDownHandler = (e) => {
+                if (e.target.closest('.desktop-icon') !== icon) return;
+                
+                isDragging = true;
+                initialMouseX = e.clientX;
+                initialMouseY = e.clientY;
+                
+                const rect = icon.getBoundingClientRect();
+                const parentRect = icon.parentElement.getBoundingClientRect();
+                offsetX = e.clientX - (rect.left - parentRect.left);
+                offsetY = e.clientY - (rect.top - parentRect.top);
+                
+                icon.style.zIndex = '1000';
+                icon.style.cursor = 'grabbing';
+                icon.classList.add('dragging');
+                
+                e.preventDefault();
+            };
+            
+            const mouseMoveHandler = (e) => {
+                if (!isDragging) return;
+                
+                const parentRect = icon.parentElement.getBoundingClientRect();
+                let newX = e.clientX - parentRect.left - offsetX;
+                let newY = e.clientY - parentRect.top - offsetY;
+                
+                // 限制在父容器內
+                newX = Math.max(0, Math.min(newX, parentRect.width - icon.offsetWidth));
+                newY = Math.max(0, Math.min(newY, parentRect.height - icon.offsetHeight));
+                
+                icon.style.left = newX + 'px';
+                icon.style.top = newY + 'px';
+                
+                e.preventDefault();
+            };
+            
+            const mouseUpHandler = (e) => {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                icon.style.zIndex = '';
+                icon.style.cursor = 'grab';
+                icon.classList.remove('dragging');
+                
+                // 保存位置
+                const index = parseInt(icon.dataset.index);
+                const currentWebsites = this.getCurrentWebsites();
+                if (currentWebsites[index]) {
+                    currentWebsites[index].position = {
+                        x: parseInt(icon.style.left),
+                        y: parseInt(icon.style.top)
+                    };
+                    this.saveWebsites();
+                }
+                
+                e.preventDefault();
+            };
+            
+            // 移除舊的事件監聽器
+            icon.removeEventListener('mousedown', mouseDownHandler);
+            document.removeEventListener('mousemove', mouseMoveHandler);
+            document.removeEventListener('mouseup', mouseUpHandler);
+            
+            // 添加新的事件監聽器
+            icon.addEventListener('mousedown', mouseDownHandler);
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+        });
+    }
+    
     // 更新圖標位置
     updateIconPosition(element, x, y) {
         // 這裡可以實現更複雜的位置計算邏輯
